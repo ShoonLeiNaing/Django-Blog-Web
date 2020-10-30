@@ -1,0 +1,83 @@
+{% extends "myblog/base.html" %}
+{% block content %}
+{% load humanize %}
+
+<style>
+.overlay{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: none;
+  background-color: rgba(0,0,0,0.5);
+}
+</style>
+<div class="site-section" id="about-section">
+      <div class="container">
+          {% if post.owner == user %}
+          <a href="#" style="margin-left:1100px;" ><i class="fa fa-pencil"></i></a>
+          {% endif %}
+        <div class="row align-items-center">
+          <div class="col-lg-6 mb-5">
+              {% if post.content_type %}
+                <div id="overlay" style="text-align: center;">
+<!--                   onclick="document.getElementById('overlay').style.display = 'none';" >-->
+                <img style="width:100%;margin-top: 10px; border:3px solid black;" src="{% url 'blog:post_picture' post.id %}">
+                </div>
+              {% endif %}
+          </div>
+
+          <div class="col-lg-5 ml-auto section-title">
+            <span class="sub-title mb-2 d-block">{{ post.updated_at|naturaltime }}</span>
+
+              <h1>{{ post.title }}</h1>
+
+            <p class="mb-6" style="font-size:23px;">{{ post.context }}</p>
+
+            <p>
+            {% load crispy_forms_tags %}
+            <form method="post" action="{% url 'blog:comment_create' post.id %}">
+                {% csrf_token %}
+                {{ form|crispy }}
+              <br>
+
+            <input type="submit" class="btn btn-outline-secondary" value="All Posts" onclick="window.location.href='{% url 'blog:post_list' %}';return false;">
+              <input type="submit" class="btn btn-outline-secondary" value="Submit">
+            </form>
+            </p>
+
+              {% for comment in comments %}
+                <p> {{ comment.text }}
+                ({{ comment.updated_at|naturaltime }})
+                {% if user == comment.owner %}
+                <a href="{% url 'blog:comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
+                {% endif %}
+                </p>
+              {% endfor %}
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+<span style="float: right;">
+
+
+
+
+</span>
+
+
+
+
+
+
+
+
+
+{% endblock %}

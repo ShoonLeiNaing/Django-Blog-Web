@@ -1,0 +1,69 @@
+{% extends "myblog/base.html" %}
+{% block content %}
+{% load humanize %}
+<br>
+{% if post_list %}
+    {% for post in post_list %}
+
+    <div class="container" style="display: flex; justify-content: center;">
+        <div class="col-lg-12 mb-4">
+          <div class="testimonial bg-white h-100">
+            <div class="d-flex align-items-center vcard">
+              <a href="{% url 'blog:post_detail' post.id  %}" ><h2>{{ post.title }}</h2></a>
+
+            {%if user.is_authenticated %}
+            <a href="#" onclick=
+                    "favPost('{% url 'blog:post_unfavorite' post.id %}',{{ post.id }}); return false;"
+                    {% if post.id not in favorite %} style="display:none;" {% endif %}
+                    id="favorite_star_{{ post.id }}">
+            <span class="fa-stack" style="vertical-align: middle;">
+                <i class="fa fa-star fa-stack-1x" style="color: orange;">
+                </i><i class="fa fa-star-o fa-stack-1x"></i>
+            </span>
+            </a>
+
+            <a href="#" onclick=
+                    "favPost('{% url 'blog:post_favorite' post.id %}',{{ post.id }}); return false;"
+                    {% if post.id in favorite %} style="display:none;" {% endif %}
+                    id="unfavorite_star_{{ post.id }}">
+            <span class="fa-stack" style="vertical-align: middle;">
+                <i class="fa fa-star fa-stack-1x" style="display:none;">
+                </i><i class="fa fa-star-o fa-stack-1x"></i>
+            </span>
+            </a>
+
+              <div class="vcard-text">
+                <span class="position">{{ post.updated_at|naturaltime }}</span>
+              </div>
+            </div>
+              <blockquote class="mb-3">
+              {% if post.context|length < 200 %}
+                  <p style="font-size:20px;">{{ post.context }}</p>
+              {% else %}
+                  <p style="font-size:20px;">{{ post.context| slice:"0:199" }}</p>
+                <a href="{% url 'blog:post_detail' post.id %}"><input type="submit"  class="btn btn-secondary" value="See More"></a>
+              {% endif %}
+
+            </blockquote>
+
+          </div>
+        </div>
+    </div>
+
+    {% endif %}
+    {% endfor %}
+{% endif %}
+<script>
+function favPost(url,post_id){
+    console.log('Requesting JSON');
+    $.post(url,{},function(rows){
+        console.log(url,"finsihed")
+        $("#unfavorite_star_"+post_id).toggle();
+        $("#favorite_star_"+post_id).toggle();
+    }).fail(function(xhr){
+        alert("Url failed with"+xhr.status+" "+url);
+    });
+    }
+</script>
+{% endblock %}
+<!--ox7LiUOm$)f6CVEAnb1Z-->
